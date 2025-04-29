@@ -1,22 +1,21 @@
 def mostrar_menu():
-    print('\n' + '=' * 30)
-    print('1 - NOVA NOTA')
-    print('2 - HISTORICO')
-    print('3 - BUSCAR NOTA')
-    print('4 - EDITAR OU EXCLUIR ENTRADA')
-    print('5 - LIMPAR HISTÓRICO')
-    print('6 - SAIR')
-
-def obter_entrada(mensagem):
-    return input(mensagem).strip()
-
-def mostrar_mensagem(mensagem):
-    print(f"\n{mensagem.center(80)}")
-
-def formatar_datahora(data_hora):
-    return data_hora.strftime("%d/%m/%Y %H:%M:%S")
+    print("\n\033[1;35m" + "═" * 30)
+    print(" DIÁRIO DIGITAL ".center(30, '★'))
+    print("═" * 30 + "\033[0m")
+    print("\033[36m1. Nova Anotação")
+    print("2. Histórico")
+    print("3. Buscar")
+    print("4. Editar/Excluir")
+    print("5. Limpar Tudo")
+    print("6. Sair\033[0m\n")
 
 def cabecalho(titulo):
-    print("\n" + "=" * 80)
-    print(titulo.center(80))
-    print("=" * 80 + "\n")
+    print("\n\033[1;35m" + "═" * 60)
+    print(f" {titulo} ".center(60, '★'))
+    print("═" * 60 + "\033[0m")
+
+def mostrar_erro(mensagem):
+    print(f"\n\033[1;31m⚠ {mensagem.center(58)} ⚠\033[0m\n")
+
+def mostrar_sucesso(mensagem):
+    print(f"\n\033[1;32m✓ {mensagem.center(58)} ✓\033[0m\n")
