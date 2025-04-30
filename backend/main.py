@@ -1,7 +1,8 @@
-from security import autenticar
+from security import *
 from fileoperations import *
 from interface import *
 import os
+from tkinter import *
 
 def main():
     cabecalho("Bem-vindo ao Diário Digital")

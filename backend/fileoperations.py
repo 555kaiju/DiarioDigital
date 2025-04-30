@@ -20,6 +20,7 @@ def ler_arquivo_cifrado(chave: bytes) -> str:
         print(f"\033[31mErro na leitura: {str(e)}\033[0m")
         return ''
 
+
 def escrever_arquivo_cifrado(conteudo: str, chave: bytes):
     try:
         dados = criptografar(conteudo, chave)
@@ -131,26 +132,32 @@ def editar_excluir(chave: bytes):
     try:
         conteudo = ler_arquivo_cifrado(chave)
         entradas = [e.strip() for e in conteudo.split(SEPARADOR) if e.strip()]
-        
         if not entradas:
             print("\n\033[33mNenhuma entrada para editar.\033[0m")
             return
-
+        
         print("\n\033[1;36m" + "═" * 60)
         print(" Entradas Disponíveis ".center(60, ' '))
         print("═" * 60 + "\033[0m")
-        for idx, entrada in enumerate(reversed(entradas)), 1:
-            data = entrada.split("\n", 1)[0][1:-1]
+        for idx, entrada in enumerate(reversed(entradas), 1):
+            partes_entrada = entrada.split("\n", 1)
+            if len(partes_entrada) < 2:
+                continue
+            data = partes_entrada[0][1:-1]
             print(f"{idx}. {data}")
 
-        num = input("\n\033[33mNúmero da entrada: \033[0m")
+        num = input("\n\033[33mNúmero da entrada: \033[0m").strip()
         if not num.isdigit() or not (1 <= int(num) <= len(entradas)):
             print("\033[31mNúmero inválido!\033[0m")
             return
 
         idx = len(entradas) - int(num)
         entrada = entradas[idx]
-        cabecalho, texto = entrada.split("\n", 1)
+        partes_entrada = entrada.split("\n", 1)
+        if len(partes_entrada) < 2:
+            print("\033[31mEntrada corrompida!\033[0m")
+            return
+        cabecalho, texto = partes_entrada
         
         print("\n\033[1;36m" + "═" * 60)
         print(" Edição de Entrada ".center(60, ' '))

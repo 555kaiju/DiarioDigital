@@ -1,6 +1,5 @@
 import os
 import hashlib
-from getpass import getpass
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
@@ -18,42 +17,21 @@ def carregar_senha():
         print(f"Erro ao ler arquivo de senha: {str(e)}")
         return None, None
 
-def criar_senha():
-    print("\n\033[1;36mCrie uma senha para proteger seu diário:\033[0m")
-    while True:
-        senha = getpass("\033[33mNova senha (mínimo 8 caracteres): \033[0m")
-        if len(senha) < 8:
-            print("\033[31mSenha muito curta! Tente novamente.\033[0m")
-            continue
+def criar_senha(senha: str):
+    salt = os.urandom(32)
+    senha_hash = hashlib.pbkdf2_hmac('sha256', senha.encode(), salt, 100000)
+    with open(SENHA_FILE, 'wb') as f:
+        f.write(salt + b',' + senha_hash)
+    return hashlib.pbkdf2_hmac('sha256', senha.encode(), salt, 100000, dklen=32)
 
-        confirmacao = getpass("\033[33mConfirme a senha: \033[0m")
-        if senha != confirmacao:
-            print("\033[31mAs senhas não coincidem!\033[0m")
-        else:
-            salt = os.urandom(32)
-            senha_hash = hashlib.pbkdf2_hmac('sha256', senha.encode(), salt, 100000)
-            with open(SENHA_FILE, 'wb') as f:
-                f.write(salt + b',' + senha_hash)
-            print("\n\033[32m✓ Senha definida com sucesso!\033[0m\n")
-            return senha
-
-def autenticar():
+def autenticar(senha_digitada: str):
     salt, senha_hash = carregar_senha()
     if not salt:
-        senha = criar_senha()
-        salt, senha_hash = carregar_senha()
-        return hashlib.pbkdf2_hmac('sha256', senha.encode(), salt, 100000, dklen=32)
-
-    tentativas = 3
-    while tentativas > 0:
-        senha = getpass("\n\033[33mDigite sua senha: \033[0m")
-        novo_hash = hashlib.pbkdf2_hmac('sha256', senha.encode(), salt, 100000)
-        if novo_hash == senha_hash:
-            return hashlib.pbkdf2_hmac('sha256', senha.encode(), salt, 100000, dklen=32)
-        tentativas -= 1
-        print(f"\033[31mSenha incorreta! Tentativas restantes: {tentativas}\033[0m")
-
-    print("\n\033[31m⚠ Acesso bloqueado! Saindo...\033[0m")
+        return None
+    
+    novo_hash = hashlib.pbkdf2_hmac('sha256', senha_digitada.encode(), salt, 100000)
+    if novo_hash == senha_hash:
+        return hashlib.pbkdf2_hmac('sha256', senha_digitada.encode(), salt, 100000, dklen=32)
     return None
 
 def criptografar(texto: str, chave: bytes) -> bytes:
